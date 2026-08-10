@@ -10,7 +10,7 @@ from __future__ import annotations
 from functools import lru_cache
 
 from pydantic_settings import BaseSettings, SettingsConfigDict
-
+from pydantic import field_validator
 
 class Settings(BaseSettings):
     """Toàn bộ cấu hình của service.
@@ -41,10 +41,20 @@ class Settings(BaseSettings):
         extra="ignore",
     )
 
-    # TODO (CP1): khai báo 7 trường theo bảng trên, ví dụ:
-    #     port: int = 8000
-    #     api_token: str
+    port: int = 8000
+    api_token: str
+    redis_url: str = "redis://localhost:6379/0"
+    bucket_capacity: int = 10
+    refill_per_minute: int = 10
+    daily_budget_usd: float = 1.0
+    log_level: str = "INFO"
 
+    @field_validator("api_token")
+    @classmethod
+    def check_api_token(cls, v: str) -> str:
+        if not v or "doi-thanh-token-cua-rieng-ban" in v or "changeme" in v:
+            raise ValueError("API_TOKEN invalid or placeholder")
+        return v
 
 @lru_cache(maxsize=1)
 def get_settings() -> Settings:
