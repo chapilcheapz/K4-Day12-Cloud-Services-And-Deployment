@@ -1,7 +1,7 @@
 # CP5 — Cấu hình deploy Railway (dùng nếu bạn chọn Railway).
 #
 # Các biến môi trường KHÔNG khai báo ở đây. Đặt chúng trong dashboard hoặc:
-#     railway variables --set API_TOKEN=mzo90gNXQ4RjOkaO6w-7u2xlqzW5ercXni3-oqK8Cvc
+#     railway variables --set API_TOKEN=
 #
 # Railway tự gán biến PORT — app phải đọc $PORT, đừng cố định 8000.
 
