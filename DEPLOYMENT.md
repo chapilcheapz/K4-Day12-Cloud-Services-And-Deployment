@@ -42,18 +42,18 @@ Thay `<URL>` bằng Public URL ở trên:
 
 ```bash
 # 1. Liveness — mong đợi 200 {"status":"ok"}
-curl -i <URL>/healthz
+curl -i https://day12-chat-production-93b0.up.railway.app/healthz
 
 # 2. Readiness — mong đợi 200 {"status":"ready"} (đã nối được Redis)
-curl -i <URL>/readyz
+curl -i https://day12-chat-production-93b0.up.railway.app/readyz
 
 # 3. Không có token — mong đợi 401 kèm header WWW-Authenticate
-curl -i -X POST <URL>/chat \
+curl -i -X POST https://day12-chat-production-93b0.up.railway.app/chat \
   -H "Content-Type: application/json" \
   -d '{"message":"Hello"}'
 
 # 4. Có token — mong đợi 200 kèm câu trả lời
-curl -i -X POST <URL>/chat \
+curl -i -X POST https://day12-chat-production-93b0.up.railway.app/chat \
   -H "Content-Type: application/json" \
   -H "Authorization: Bearer $API_TOKEN" \
   -H "X-Client-Id: sv-test" \
@@ -61,7 +61,7 @@ curl -i -X POST <URL>/chat \
 
 # 5. Rate limit — gọi 15 lần, những lần cuối phải trả 429
 for i in $(seq 1 15); do
-  curl -s -o /dev/null -w "%{http_code} " -X POST <URL>/chat \
+  curl -s -o /dev/null -w "%{http_code} " -X POST https://day12-chat-production-93b0.up.railway.app/chat \
     -H "Content-Type: application/json" \
     -H "Authorization: Bearer $API_TOKEN" \
     -H "X-Client-Id: sv-test" \
@@ -74,7 +74,51 @@ done; echo
 Dán output của các lệnh trên vào đây:
 
 ```
-Thành công!
+HTTP/2 200 
+content-type: application/json
+date: Mon, 10 Aug 2026 08:55:08 GMT
+server: railway-hikari
+x-railway-request-id: 6OZ3YlW0SteeqFwyn6XIxQ
+content-length: 64
+x-hikari-trace: sin1.tr00
+x-railway-edge: sin1
+
+{"status":"ok","service":"day12-chat-service","version":"1.0.0"}
+
+HTTP/2 200 
+content-type: application/json
+date: Mon, 10 Aug 2026 08:55:14 GMT
+server: railway-hikari
+x-railway-request-id: ycN9_0NvTtWaGLJg2h0iww
+content-length: 31
+x-hikari-trace: sin1.98a6
+x-railway-edge: sin1
+
+{"status":"ready","redis":true}
+
+HTTP/2 401 
+content-type: application/json
+date: Mon, 10 Aug 2026 08:55:26 GMT
+server: railway-hikari
+www-authenticate: Bearer
+x-railway-request-id: q1xqZ-iRStqOLNVT2prcFg
+content-length: 44
+x-hikari-trace: sin1.hs0s
+x-railway-edge: sin1
+
+{"detail":"invalid or missing bearer token"}
+
+HTTP/2 200 
+content-type: application/json
+date: Mon, 10 Aug 2026 08:55:44 GMT
+server: railway-hikari
+x-railway-request-id: 3cNIwvD6Q7WS2fRO9I3ezw
+content-length: 288
+x-hikari-trace: sin1.hs0s
+x-railway-edge: sin1
+vary: accept-encoding
+
+{"reply":"Câu hỏi hay. Deploy là gì thường được giải quyết bằng cách chuẩn hóa môi trường chạy: cùng một image chạy giống nhau ở laptop và trên cloud.","client_id":"sv-test","turns_before":0,"usd_cost":2.145e-05,"usage":{"prompt":3,"completion":35}}
 ```
 
 ## Ảnh Chụp Màn Hình
